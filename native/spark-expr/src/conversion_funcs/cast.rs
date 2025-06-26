@@ -2698,14 +2698,18 @@ mod tests {
             Some(-42.4242415),
             Some(42e-314),
             Some(0.),
-            Some(-4242.424242),
+            Some(10_f64.powi(24)),
             Some(f64::INFINITY),
             Some(f64::NEG_INFINITY),
             Some(f64::NAN),
             None,
+            Some(123456789012345.375),
+            Some(-123456789012345.375),
+            Some(123456789012345.625),
+            Some(-123456789012345.625),
         ]));
         let b =
-            cast_floating_point_to_decimal128::<Float64Type>(&a, 8, 6, EvalMode::Legacy).unwrap();
+            cast_floating_point_to_decimal128::<Float64Type>(&a, 28, 6, EvalMode::Legacy).unwrap();
         assert_eq!(b.len(), a.len());
         let casted = b.as_primitive::<Decimal128Type>();
         assert_eq!(casted.value(0), 42000000);
@@ -2719,5 +2723,9 @@ mod tests {
         assert!(casted.is_null(7));
         assert!(casted.is_null(8));
         assert!(casted.is_null(9));
+        assert_eq!(casted.value(10), 123456789012345380000);
+        assert_eq!(casted.value(11), -123456789012345380000);
+        assert_eq!(casted.value(12), 123456789012345620000);
+        assert_eq!(casted.value(13), -123456789012345620000);
     }
 }
